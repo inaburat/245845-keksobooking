@@ -31,16 +31,13 @@ var multipleArrayValue = function (arrayName) {
   return rndArr;
 };
 var generateAuthorData = function (id) {
-  if (id <= 9) {
-    return {avatar: 'img/avatars/user' + '0' + (id + 1) + '.png'};
-  } else {
-    return {avatar: 'img/avatars/user' + (id + 1) + '.png'};
-  }
+  return {avatar: 'img/avatars/user' + ((id <= 9) ? '0' : '') + (id + 1) + '.png'};
 };
-var generateOfferData = function () {
+
+var generateOfferData = function (location) {
   return {
     title: singleArrayValue(titles),
-    address: '{{location.x}}, {{location.y}}',
+    address: location.x + ', ' + location.y,
     price: randomInteger(1000, 1000000),
     type: randomArrayValue(types),
     rooms: randomInteger(1, 5),
@@ -52,6 +49,7 @@ var generateOfferData = function () {
     photos: []
   };
 };
+
 var generateLocationData = function () {
   return {
     x: randomInteger(300, 900),
@@ -59,10 +57,11 @@ var generateLocationData = function () {
   };
 };
 var generateData = function (id) {
+  var locationData = generateLocationData();
   return {
     author: generateAuthorData(id),
-    offer: generateOfferData(),
-    location: generateLocationData()
+    offer: generateOfferData(locationData),
+    location: locationData
   };
 };
 var getData = function (count) {
@@ -107,38 +106,27 @@ mapPins.appendChild(buttonFragment); // переносим элементы из
 var templateAticle = template.querySelector('article.map__card'); // article для клонирования
 var articleFlag = document.querySelector('.map__filters-container');
 
+var HOUSE_TYPES = {flat: 'Квартира', bungalo: 'Бунгало', house: 'Дом'};
+
+var renderFeuteres = function (d) {
+  var articleElement = templateAticle.cloneNode(true);
+  var feuteresList = d.offer.features;
+  var feuteresHtml = '';
+  if (feuteresList.length) {
+    for (i = 0; i < feuteresList.length; i++) {
+      var contetn = '<li class="feature feature--' + feuteresList[i] + '"></li>';
+      feuteresHtml += contetn;
+    }
+  }
+  return feuteresHtml;
+};
+
 // подставляем значения из массива в 'статью'
 var renderArticle = function (data) {
-  var articleElement = templateAticle.cloneNode(true);
-
-  var typeOfhouse = function (d) {
-    var type = d.offer.type;
-
-    if (type === 'flat') {
-      return 'Квартира';
-    } else if (type === 'bungalo') {
-      return 'Бунгало';
-    } else {
-      return 'Дом';
-    }
-  };
-
-  var renderFeuteres = function (d) {
-    var feuteresList = d.offer.features;
-    var feuteresHtml = '';
-    if (feuteresList.length) {
-      for (i = 0; i < feuteresList.length; i++) {
-        var contetn = '<li class="feature feature--' + feuteresList[i] + '"></li>';
-        feuteresHtml += contetn;
-      }
-    }
-    return feuteresHtml;
-  };
-
   articleElement.querySelector('h3').textContent = data.offer.title;
   articleElement.querySelector('p small').textContent = data.offer.address;
   articleElement.querySelector('.popup__price').innerHTML = data.offer.price + ' &#8381;/ночь';
-  articleElement.querySelector('h4').textContent = typeOfhouse(data);
+  articleElement.querySelector('h4').textContent = HOUSE_TYPES[data.offer.type];
   articleElement.querySelector('h4').nextElementSibling.textContent = data.offer.rooms + ' комнаты для ' + data.offer.guests + ' гостей ';
   articleElement.querySelector('.popup__features').previousElementSibling.textContent = 'Заезд после ' + data.offer.checkin + ', выезд до ' + data.offer.checkout;
   articleElement.querySelector('.popup__features').innerHTML = renderFeuteres(data);
