@@ -49,7 +49,6 @@ var generateOfferData = function (location) {
     photos: []
   };
 };
-
 var generateLocationData = function () {
   return {
     x: randomInteger(300, 900),
@@ -105,11 +104,9 @@ mapPins.appendChild(buttonFragment); // переносим элементы из
 
 var templateAticle = template.querySelector('article.map__card'); // article для клонирования
 var articleFlag = document.querySelector('.map__filters-container');
-
 var HOUSE_TYPES = {flat: 'Квартира', bungalo: 'Бунгало', house: 'Дом'};
 
 var renderFeuteres = function (d) {
-  var articleElement = templateAticle.cloneNode(true);
   var feuteresList = d.offer.features;
   var feuteresHtml = '';
   if (feuteresList.length) {
@@ -123,6 +120,8 @@ var renderFeuteres = function (d) {
 
 // подставляем значения из массива в 'статью'
 var renderArticle = function (data) {
+  var articleElement = templateAticle.cloneNode(true);
+
   articleElement.querySelector('h3').textContent = data.offer.title;
   articleElement.querySelector('p small').textContent = data.offer.address;
   articleElement.querySelector('.popup__price').innerHTML = data.offer.price + ' &#8381;/ночь';
