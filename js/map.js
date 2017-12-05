@@ -164,7 +164,7 @@ var renderArticle = function (data) {
   popUpClose.addEventListener('click', closePopup);
   popUpClose.addEventListener('keydown', function (evt) {
     if (evt.keyCode === ENTER_KEYCODE) {
-      openPopup(evt);
+      closePopup(evt);
     }
   });
   return articleElement;
