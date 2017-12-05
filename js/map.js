@@ -72,10 +72,19 @@ getData(8); // вызываем функцию создания массива
 
 var template = document.querySelector('template').content; // объект с шаблонами
 var templateButton = template.querySelector('.map__pin'); // кнопка для клонирования
-var mapPins = document.querySelector('.map__pins'); // область для открисовки новых кнопок
+var templateAticle = template.querySelector('article.map__card'); // article для клонирования
+
 var articleFragment = document.createDocumentFragment();
 var buttonFragment = document.createDocumentFragment(); // область для клонирования элементов
+var articleFlag = document.querySelector('.map__filters-container');
 
+var map = document.querySelector('.map');
+var mapPins = document.querySelector('.map__pins'); // область для открисовки новых кнопок
+var mapMainPin = document.querySelector('.map__pin--main');
+var mapForm = document.querySelector('.map__filters');
+var allFormElement = document.querySelectorAll('fieldset');
+
+var HOUSE_TYPES = {flat: 'Квартира', bungalo: 'Бунгало', house: 'Дом'};
 var ESC_KEYCODE = 27;
 var ENTER_KEYCODE = 13;
 
@@ -126,19 +135,11 @@ var renderButton = function (data, index) {
   return buttonElement;
 };
 
-for (var i = 0; i < dataArray.length; i++) {
-  buttonFragment.appendChild(renderButton(dataArray[i], i));
-}
-
-var templateAticle = template.querySelector('article.map__card'); // article для клонирования
-var articleFlag = document.querySelector('.map__filters-container');
-var HOUSE_TYPES = {flat: 'Квартира', bungalo: 'Бунгало', house: 'Дом'};
-
 var renderFeuteres = function (data) {
   var feuteresList = data.offer.features;
   var feuteresHtml = '';
   if (feuteresList.length) {
-    for (i = 0; i < feuteresList.length; i++) {
+    for (var i = 0; i < feuteresList.length; i++) {
       var contetn = '<li class="feature feature--' + feuteresList[i] + '"></li>';
       feuteresHtml += contetn;
     }
@@ -169,19 +170,6 @@ var renderArticle = function (data) {
   return articleElement;
 };
 
-
-var allFormElement = document.querySelectorAll('fieldset');
-var map = document.querySelector('.map');
-
-for (i = 0; i < allFormElement.length; i++) {
-  allFormElement[i].disabled = true;
-}
-
-var mapForm = document.querySelector('.map__filters');
-mapForm.classList.add('notice__form--disabled');
-
-var mapMainPin = document.querySelector('.map__pin--main');
-
 var activateMap = function () {
   mapForm.classList.remove('notice__form--disabled');
   map.classList.remove('map--faded');
@@ -189,5 +177,14 @@ var activateMap = function () {
   mapForm.classList.remove('notice__form--disabled');
 };
 
-
-mapMainPin.addEventListener('mouseup', activateMap);
+var init = function () {
+  for (var i = 0; i < dataArray.length; i++) {
+    buttonFragment.appendChild(renderButton(dataArray[i], i));
+  }
+  for (i = 0; i < allFormElement.length; i++) {
+    allFormElement[i].disabled = true;
+  }
+  mapForm.classList.add('notice__form--disabled');
+  mapMainPin.addEventListener('mouseup', activateMap);
+};
+init();
