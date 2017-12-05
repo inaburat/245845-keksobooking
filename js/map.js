@@ -1,6 +1,5 @@
 'use strict';
 
-// 1. Создайте массив, состоящий из 8 сгенерированных JS объектов, которые будут описывать похожие объявления неподалеку. Структура объектов должна быть следующей:
 var titles = ['Большая уютная квартира', 'Маленькая неуютная квартира', 'Огромный прекрасный дворец', 'Маленький ужасный дворец', 'Красивый гостевой домик', 'Некрасивый негостеприимный домик', 'Уютное бунгало далеко от моря', 'Неуютное бунгало по колено в воде'];
 var types = ['flat', 'house', 'bungalo'];
 var times = ['12:00', '13:00', '14:00'];
@@ -71,43 +70,72 @@ var getData = function (count) {
 };
 getData(8); // вызываем функцию создания массива
 
-// --2. У блока .map уберите класс .map--faded--
-var map = document.querySelector('.map');
-map.classList.remove('map--faded');
-
-// --3.На основе данных, созданных в первом пункте, создайте DOM-элементы, соответствующие меткам на карте, и заполните их данными из массива. Итоговая разметка метки должна выглядеть следующим образом:--
 var template = document.querySelector('template').content; // объект с шаблонами
 var templateButton = template.querySelector('.map__pin'); // кнопка для клонирования
 var mapPins = document.querySelector('.map__pins'); // область для открисовки новых кнопок
+var articleFragment = document.createDocumentFragment();
+var buttonFragment = document.createDocumentFragment(); // область для клонирования элементов
 
-// подставляем значения из массива в кнопку
-var renderButton = function (data) {
+var ESC_KEYCODE = 27;
+var ENTER_KEYCODE = 13;
+
+var onPopupEscPress = function (evt) {
+  if (evt.keyCode === ESC_KEYCODE) {
+    closePopup();
+  }
+};
+
+var closePopup = function () {
+  var popUp = document.querySelector('.map__card');
+  var popUpParrent = document.querySelector('.map');
+  var activePin = document.querySelector('.map__pin--active');
+
+  popUpParrent.removeChild(popUp);
+  activePin.classList.remove('map__pin--active');
+  document.removeEventListener('keydown', onPopupEscPress);
+};
+
+var openPopup = function (evt) {
+  var popUp = document.querySelector('.map__card');
+  if (popUp) {
+    closePopup();
+  }
+  evt.currentTarget.classList.add('map__pin--active');
+  articleFragment.appendChild(renderArticle(dataArray[evt.currentTarget.dataset.index]));
+  map.insertBefore(articleFragment, articleFlag);
+  document.addEventListener('keydown', onPopupEscPress);
+};
+
+var renderButton = function (data, index) {
   var buttonElement = templateButton.cloneNode(true); // определяем элемен для возврата из функции
   var buttonCenterX = 65 / 2;
   var buttonBottomY = 84;
 
-  // подствляем нужные значения
   buttonElement.style.left = data.location.x - buttonCenterX + 'px';
   buttonElement.style.top = data.location.y + buttonBottomY + 'px';
   buttonElement.querySelector('img').src = data.author.avatar;
+  buttonElement.dataset.index = index;
+  buttonElement.addEventListener('click', function (evt) {
+    openPopup(evt);
+  });
+  buttonElement.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+      openPopup(evt);
+    }
+  });
   return buttonElement;
 };
 
-// 4.Отрисуйте сгенерированные DOM-элементы в блок .map__pins. Для вставки элементов используйте DocumentFragment.
-var buttonFragment = document.createDocumentFragment(); // область для клонирования элементов
 for (var i = 0; i < dataArray.length; i++) {
-  buttonFragment.appendChild(renderButton(dataArray[i]));
+  buttonFragment.appendChild(renderButton(dataArray[i], i));
 }
-mapPins.appendChild(buttonFragment); // переносим элементы из области клонирования на страницу
-
-// 5. На основе первого по порядку элемента из сгенерированного массива и шаблона template article.map__card создайте DOM-элемент объявления, заполните его данными из объекта и вставьте полученный DOM-элемент в блок .map перед блоком .map__filters-container:
 
 var templateAticle = template.querySelector('article.map__card'); // article для клонирования
 var articleFlag = document.querySelector('.map__filters-container');
 var HOUSE_TYPES = {flat: 'Квартира', bungalo: 'Бунгало', house: 'Дом'};
 
-var renderFeuteres = function (d) {
-  var feuteresList = d.offer.features;
+var renderFeuteres = function (data) {
+  var feuteresList = data.offer.features;
   var feuteresHtml = '';
   if (feuteresList.length) {
     for (i = 0; i < feuteresList.length; i++) {
@@ -121,6 +149,7 @@ var renderFeuteres = function (d) {
 // подставляем значения из массива в 'статью'
 var renderArticle = function (data) {
   var articleElement = templateAticle.cloneNode(true);
+  var popUpClose = articleElement.querySelector('.popup__close');
 
   articleElement.querySelector('h3').textContent = data.offer.title;
   articleElement.querySelector('p small').textContent = data.offer.address;
@@ -131,9 +160,34 @@ var renderArticle = function (data) {
   articleElement.querySelector('.popup__features').innerHTML = renderFeuteres(data);
   articleElement.querySelector('.popup__features').nextElementSibling.textContent = data.offer.description;
   articleElement.querySelector('img').src = data.author.avatar;
+  popUpClose.addEventListener('click', closePopup);
+  popUpClose.addEventListener('keydown', function (evt) {
+    if (evt.keyCode === ENTER_KEYCODE) {
+      openPopup(evt);
+    }
+  });
   return articleElement;
 };
 
-var articleFragment = document.createDocumentFragment();
-articleFragment.appendChild(renderArticle(dataArray[0]));
-map.insertBefore(articleFragment, articleFlag);
+
+var allFormElement = document.querySelectorAll('fieldset');
+var map = document.querySelector('.map');
+
+for (i = 0; i < allFormElement.length; i++) {
+  allFormElement[i].disabled = true;
+}
+
+var mapForm = document.querySelector('.map__filters');
+mapForm.classList.add('notice__form--disabled');
+
+var mapMainPin = document.querySelector('.map__pin--main');
+
+var activateMap = function () {
+  mapForm.classList.remove('notice__form--disabled');
+  map.classList.remove('map--faded');
+  mapPins.appendChild(buttonFragment); // переносим элементы из области клонирования на страницу
+  mapForm.classList.remove('notice__form--disabled');
+};
+
+
+mapMainPin.addEventListener('mouseup', activateMap);
