@@ -72,7 +72,7 @@ getData(8); // вызываем функцию создания массива
 
 var template = document.querySelector('template').content; // объект с шаблонами
 var templateButton = template.querySelector('.map__pin'); // кнопка для клонирования
-var templateAticle = template.querySelector('article.map__card'); // article для клонирования
+var templateArticle = template.querySelector('article.map__card'); // article для клонирования
 
 var articleFragment = document.createDocumentFragment();
 var buttonFragment = document.createDocumentFragment(); // область для клонирования элементов
@@ -81,7 +81,7 @@ var articleFlag = document.querySelector('.map__filters-container');
 var map = document.querySelector('.map');
 var mapPins = document.querySelector('.map__pins'); // область для открисовки новых кнопок
 var mapMainPin = document.querySelector('.map__pin--main');
-var mapForm = document.querySelector('.map__filters');
+var mapForm = document.querySelector('.notice__form');
 var allFormElement = document.querySelectorAll('fieldset');
 
 var HOUSE_TYPES = {flat: 'Квартира', bungalo: 'Бунгало', house: 'Дом'};
@@ -149,7 +149,7 @@ var renderFeuteres = function (data) {
 
 // подставляем значения из массива в 'статью'
 var renderArticle = function (data) {
-  var articleElement = templateAticle.cloneNode(true);
+  var articleElement = templateArticle.cloneNode(true);
   var popUpClose = articleElement.querySelector('.popup__close');
 
   articleElement.querySelector('h3').textContent = data.offer.title;
@@ -164,7 +164,7 @@ var renderArticle = function (data) {
   popUpClose.addEventListener('click', closePopup);
   popUpClose.addEventListener('keydown', function (evt) {
     if (evt.keyCode === ENTER_KEYCODE) {
-      closePopup(evt);
+      closePopup();
     }
   });
   return articleElement;
@@ -175,6 +175,9 @@ var activateMap = function () {
   map.classList.remove('map--faded');
   mapPins.appendChild(buttonFragment); // переносим элементы из области клонирования на страницу
   mapForm.classList.remove('notice__form--disabled');
+  for (var i = 0; i < allFormElement.length; i++) {
+    allFormElement[i].disabled = false;
+  }
 };
 
 var init = function () {
@@ -188,3 +191,75 @@ var init = function () {
   mapMainPin.addEventListener('mouseup', activateMap);
 };
 init();
+
+
+// Валидация формы
+var inputAdress = document.querySelector('#address');
+inputAdress.required = true;
+inputAdress.readOnly = true;
+
+var inputTitle = document.querySelector('#title');
+inputTitle.required = true;
+inputTitle.minLength = 30;
+inputTitle.maxLength = 100;
+
+var inputPrice = document.querySelector('#price');
+inputPrice.required = true;
+inputPrice.min = 0;
+inputPrice.max = 1000000;
+inputPrice.placeholder = 1000;
+
+var inputTimeIn = document.querySelector('#timein');
+var inputTimeOut = document.querySelector('#timeout');
+
+var inputTimeInChange = function () {
+  var currentIndex = inputTimeIn.selectedIndex;
+  inputTimeOut[currentIndex].selected = true;
+};
+var inputTimeOutChange = function () {
+  var currentIndex = inputTimeOut.selectedIndex;
+  inputTimeIn[currentIndex].selected = true;
+};
+
+inputTimeIn.addEventListener('change', inputTimeInChange);
+inputTimeOut.addEventListener('change', inputTimeOutChange);
+
+var inputType = document.querySelector('#type');
+var TYPES_PRICES = {bungalo: 0, flat: 1000, house: 5000, palace : 10000};
+
+var inputTypeChange = function () {
+  inputPrice.min = TYPES_PRICES[inputType.value];
+};
+
+inputType.addEventListener('change', inputTypeChange);
+
+var inputRoomNumber = document.querySelector('#room_number');
+var inputCapacity = document.querySelector('#capacity');
+var ROOMS_GUESTS = {
+  1: [true, true, false, true],
+  2: [true, false, false, true],
+  3: [false, false, false, true],
+  100: [true, true, true, false]
+};
+
+var inputRoomNumberChange = function () {
+  var currentValue = inputRoomNumber.value;
+  var optionCapacity = inputCapacity.options;
+  var guestKey = ROOMS_GUESTS[currentValue];
+
+  for (var i = 0; i < guestKey.length; i++) {
+    optionCapacity[i].disabled = guestKey[i];
+  }
+  if ( currentValue <= 3 ) {
+    for (i = 0; i < optionCapacity.length; i++ ) {
+      if (optionCapacity[i].value == currentValue) {
+        optionCapacity[i].selected = true;
+      }
+    }
+  } else {
+    optionCapacity[optionCapacity.length - 1].selected = true;
+  }
+};
+
+inputRoomNumber.addEventListener('change', inputRoomNumberChange);
+mapForm.action = 'https://js.dump.academy/keksobooking';
