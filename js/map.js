@@ -203,12 +203,6 @@ var inputTimeOut = document.querySelector('#timeout');
 var inputRoomNumber = document.querySelector('#room_number');
 var inputCapacity = document.querySelector('#capacity');
 var TYPES_PRICES = {bungalo: 0, flat: 1000, house: 5000, palace: 10000};
-// var ROOMS_GUESTS = {
-//   1: [true, true, false, true],
-//   2: [true, false, false, true],
-//   3: [false, false, false, true],
-//   100: [true, true, true, false]
-// };
 
 var inputTimeInChange = function () {
   inputTimeOut[inputTimeIn.selectedIndex].selected = true;
@@ -221,6 +215,13 @@ var inputTypeChange = function () {
   inputPrice.min = TYPES_PRICES[inputType.value];
 };
 
+// var ROOMS_GUESTS = {
+//   1: [true, true, false, true],
+//   2: [true, false, false, true],
+//   3: [false, false, false, true],
+//   100: [true, true, true, false]
+// };
+//
 // var inputRoomNumberChange = function () {
 //   var currentValue = inputRoomNumber.value;
 //   var optionCapacity = inputCapacity.options;
@@ -252,11 +253,21 @@ var inputRoomNumberChange = function () {
 
   for (var i = 0; i < optionCapacity.length; i++) {
     optionCapacity[i].disabled = true;
+
     for (var j = 0; j < guestKey.length; j++) {
       if (guestKey[j] === optionCapacity[i].value) {
         optionCapacity[i].disabled = false;
       }
     }
+  }
+  if (currentValue <= 3) {
+    for (i = 0; i < optionCapacity.length; i++) {
+      if (optionCapacity[i].value === currentValue) {
+        optionCapacity[i].selected = true;
+      }
+    }
+  } else {
+    optionCapacity[optionCapacity.length - 1].selected = true;
   }
 };
 
