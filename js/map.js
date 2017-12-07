@@ -225,7 +225,7 @@ inputTimeIn.addEventListener('change', inputTimeInChange);
 inputTimeOut.addEventListener('change', inputTimeOutChange);
 
 var inputType = document.querySelector('#type');
-var TYPES_PRICES = {bungalo: 0, flat: 1000, house: 5000, palace : 10000};
+var TYPES_PRICES = {bungalo: 0, flat: 1000, house: 5000, palace: 10000};
 
 var inputTypeChange = function () {
   inputPrice.min = TYPES_PRICES[inputType.value];
@@ -250,9 +250,9 @@ var inputRoomNumberChange = function () {
   for (var i = 0; i < guestKey.length; i++) {
     optionCapacity[i].disabled = guestKey[i];
   }
-  if ( currentValue <= 3 ) {
-    for (i = 0; i < optionCapacity.length; i++ ) {
-      if (optionCapacity[i].value == currentValue) {
+  if (currentValue <= 3) {
+    for (i = 0; i < optionCapacity.length; i++) {
+      if (optionCapacity[i].value === currentValue) {
         optionCapacity[i].selected = true;
       }
     }
