@@ -194,72 +194,87 @@ init();
 
 
 // Валидация формы
-var inputAdress = document.querySelector('#address');
-inputAdress.required = true;
-inputAdress.readOnly = true;
-
 var inputTitle = document.querySelector('#title');
-inputTitle.required = true;
-inputTitle.minLength = 30;
-inputTitle.maxLength = 100;
-
+var inputAdress = document.querySelector('#address');
 var inputPrice = document.querySelector('#price');
-inputPrice.required = true;
-inputPrice.min = 0;
-inputPrice.max = 1000000;
-inputPrice.placeholder = 1000;
-
+var inputType = document.querySelector('#type');
 var inputTimeIn = document.querySelector('#timein');
 var inputTimeOut = document.querySelector('#timeout');
+var inputRoomNumber = document.querySelector('#room_number');
+var inputCapacity = document.querySelector('#capacity');
+var TYPES_PRICES = {bungalo: 0, flat: 1000, house: 5000, palace: 10000};
+// var ROOMS_GUESTS = {
+//   1: [true, true, false, true],
+//   2: [true, false, false, true],
+//   3: [false, false, false, true],
+//   100: [true, true, true, false]
+// };
 
 var inputTimeInChange = function () {
-  var currentIndex = inputTimeIn.selectedIndex;
-  inputTimeOut[currentIndex].selected = true;
+  inputTimeOut[inputTimeIn.selectedIndex].selected = true;
 };
 var inputTimeOutChange = function () {
-  var currentIndex = inputTimeOut.selectedIndex;
-  inputTimeIn[currentIndex].selected = true;
+  inputTimeIn[inputTimeOut.selectedIndex].selected = true;
 };
-
-inputTimeIn.addEventListener('change', inputTimeInChange);
-inputTimeOut.addEventListener('change', inputTimeOutChange);
-
-var inputType = document.querySelector('#type');
-var TYPES_PRICES = {bungalo: 0, flat: 1000, house: 5000, palace: 10000};
 
 var inputTypeChange = function () {
   inputPrice.min = TYPES_PRICES[inputType.value];
 };
 
-inputType.addEventListener('change', inputTypeChange);
-
-var inputRoomNumber = document.querySelector('#room_number');
-var inputCapacity = document.querySelector('#capacity');
+// var inputRoomNumberChange = function () {
+//   var currentValue = inputRoomNumber.value;
+//   var optionCapacity = inputCapacity.options;
+//   var guestKey = ROOMS_GUESTS[currentValue];
+//
+//   for (var i = 0; i < guestKey.length; i++) {
+//     optionCapacity[i].disabled = guestKey[i];
+//   }
+//   if (currentValue <= 3) {
+//     for (i = 0; i < optionCapacity.length; i++) {
+//       if (optionCapacity[i].value === currentValue) {
+//         optionCapacity[i].selected = true;
+//       }
+//     }
+//   } else {
+//     optionCapacity[optionCapacity.length - 1].selected = true;
+//   }
+// };
 var ROOMS_GUESTS = {
-  1: [true, true, false, true],
-  2: [true, false, false, true],
-  3: [false, false, false, true],
-  100: [true, true, true, false]
+  1: ['1'],
+  2: ['1', '2'],
+  3: ['1', '2', '3'],
+  100: ['0']
 };
-
 var inputRoomNumberChange = function () {
   var currentValue = inputRoomNumber.value;
   var optionCapacity = inputCapacity.options;
   var guestKey = ROOMS_GUESTS[currentValue];
 
-  for (var i = 0; i < guestKey.length; i++) {
-    optionCapacity[i].disabled = guestKey[i];
-  }
-  if (currentValue <= 3) {
-    for (i = 0; i < optionCapacity.length; i++) {
-      if (optionCapacity[i].value === currentValue) {
-        optionCapacity[i].selected = true;
+  for (var i = 0; i < optionCapacity.length; i++) {
+    optionCapacity[i].disabled = true;
+    for (var j = 0; j < guestKey.length; j++) {
+      if (guestKey[j] === optionCapacity[i].value) {
+        optionCapacity[i].disabled = false;
       }
     }
-  } else {
-    optionCapacity[optionCapacity.length - 1].selected = true;
   }
 };
 
-inputRoomNumber.addEventListener('change', inputRoomNumberChange);
-mapForm.action = 'https://js.dump.academy/keksobooking';
+var formInit = function () {
+  inputAdress.required = true;
+  inputAdress.readOnly = true;
+  inputTitle.required = true;
+  inputTitle.minLength = 30;
+  inputTitle.maxLength = 100;
+  inputPrice.required = true;
+  inputPrice.min = 0;
+  inputPrice.max = 1000000;
+  inputPrice.placeholder = 1000;
+  inputTimeIn.addEventListener('change', inputTimeInChange);
+  inputTimeOut.addEventListener('change', inputTimeOutChange);
+  inputType.addEventListener('change', inputTypeChange);
+  inputRoomNumber.addEventListener('change', inputRoomNumberChange);
+  mapForm.action = 'https://js.dump.academy/keksobooking';
+};
+
+formInit();
