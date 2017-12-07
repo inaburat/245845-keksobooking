@@ -250,24 +250,19 @@ var inputRoomNumberChange = function () {
   var currentValue = inputRoomNumber.value;
   var optionCapacity = inputCapacity.options;
   var guestKey = ROOMS_GUESTS[currentValue];
+  optionCapacity[optionCapacity.length - 1].selected = true;
 
   for (var i = 0; i < optionCapacity.length; i++) {
     optionCapacity[i].disabled = true;
+    if (optionCapacity[i].value === currentValue) {
+      optionCapacity[i].selected = true;
+    }
 
     for (var j = 0; j < guestKey.length; j++) {
       if (guestKey[j] === optionCapacity[i].value) {
         optionCapacity[i].disabled = false;
       }
     }
-  }
-  if (currentValue <= 3) {
-    for (i = 0; i < optionCapacity.length; i++) {
-      if (optionCapacity[i].value === currentValue) {
-        optionCapacity[i].selected = true;
-      }
-    }
-  } else {
-    optionCapacity[optionCapacity.length - 1].selected = true;
   }
 };
 
