@@ -18,7 +18,6 @@
   var inputTimeOutChange = function () {
     inputTimeIn[inputTimeOut.selectedIndex].selected = true;
   };
-
   var inputTypeChange = function () {
     inputPrice.min = TYPES_PRICES[inputType.value];
   };
@@ -59,12 +58,22 @@
     inputPrice.min = 0;
     inputPrice.max = 1000000;
     inputPrice.placeholder = 1000;
-    inputTimeIn.addEventListener('change', inputTimeInChange);
-    inputTimeOut.addEventListener('change', inputTimeOutChange);
-    inputType.addEventListener('change', inputTypeChange);
+    // inputTimeIn.addEventListener('change', inputTimeInChange);
+    // inputTimeOut.addEventListener('change', inputTimeOutChange);
+    // inputType.addEventListener('change', inputTypeChange);
     inputRoomNumber.addEventListener('change', inputRoomNumberChange);
     mapForm.action = 'https://js.dump.academy/keksobooking';
     inputRoomNumberChange();
+
+    var syncValues = function(element, value) {
+      element.value = value;
+    };
+    var syncValueWithMin = function(element, value) {
+      element.min = TYPES_PRICES[value];
+    };
+
+    window.synchronizeFields(inputTimeIn, inputTimeOut, syncValues);
+    window.synchronizeFields(inputType, inputPrice, syncValueWithMin);
   };
 
   formInit();
