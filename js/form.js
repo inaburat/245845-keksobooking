@@ -12,15 +12,15 @@
   var inputCapacity = document.querySelector('#capacity');
   var TYPES_PRICES = {bungalo: 0, flat: 1000, house: 5000, palace: 10000};
 
-  var inputTimeInChange = function () {
-    inputTimeOut[inputTimeIn.selectedIndex].selected = true;
-  };
-  var inputTimeOutChange = function () {
-    inputTimeIn[inputTimeOut.selectedIndex].selected = true;
-  };
-  var inputTypeChange = function () {
-    inputPrice.min = TYPES_PRICES[inputType.value];
-  };
+  // var inputTimeInChange = function () {
+  //   inputTimeOut[inputTimeIn.selectedIndex].selected = true;
+  // };
+  // var inputTimeOutChange = function () {
+  //   inputTimeIn[inputTimeOut.selectedIndex].selected = true;
+  // };
+  // var inputTypeChange = function () {
+  //   inputPrice.min = TYPES_PRICES[inputType.value];
+  // };
 
   var ROOMS_GUESTS = {
     1: ['1'],
@@ -65,10 +65,10 @@
     mapForm.action = 'https://js.dump.academy/keksobooking';
     inputRoomNumberChange();
 
-    var syncValues = function(element, value) {
+    var syncValues = function (element, value) {
       element.value = value;
     };
-    var syncValueWithMin = function(element, value) {
+    var syncValueWithMin = function (element, value) {
       element.min = TYPES_PRICES[value];
     };
 
