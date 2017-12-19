@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-  var buttonFragment = document.createDocumentFragment(); // область для клонирования элементов
   var map = document.querySelector('.map');
   var mapPins = document.querySelector('.map__pins'); // область для открисовки новых кнопок
   var mapMainPin = document.querySelector('.map__pin--main');
@@ -9,15 +8,20 @@
   var allFormElement = document.querySelectorAll('fieldset');
   var dataArray = [];
 
+  var MAIN_PIN_HEIGHT = 84;
   var MIN_CLIENT_Y = 100;
   var MAX_CLIENT_Y = 500;
 
   var activateMap = function () {
+    var buttonFragment = document.createDocumentFragment(); // область для клонирования элементов
+    for (var i = 0; i < dataArray.length; i++) {
+      buttonFragment.appendChild(window.pin.renderButton(dataArray[i], i));
+    }
     mapForm.classList.remove('notice__form--disabled');
     map.classList.remove('map--faded');
     mapPins.appendChild(buttonFragment); // переносим элементы из области клонирования на страницу
     mapForm.classList.remove('notice__form--disabled');
-    for (var i = 0; i < allFormElement.length; i++) {
+    for (i = 0; i < allFormElement.length; i++) {
       allFormElement[i].disabled = false;
     }
     document.removeEventListener('mouseup', activateMap);
@@ -78,7 +82,7 @@
       upEvt.preventDefault();
       var inputAddress = document.querySelector('#address');
 
-      inputAddress.value = 'x: ' + endCoordsX + ', y: ' + endCoordsY;
+      inputAddress.value = 'x: ' + endCoordsX + ', y: ' + (endCoordsY + MAIN_PIN_HEIGHT);
       document.removeEventListener('mousemove', onMouseMove);
       document.removeEventListener('mouseup', onMouseUp);
     };
@@ -92,16 +96,29 @@
     return dataArray[index];
   };
 
+  var successHandler = function (data) {
+    dataArray = data;
+  };
+  var errorHandler = function (errorMessage) {
+    var node = document.createElement('div');
+    node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: red;';
+    node.style.position = 'absolute';
+    node.style.left = 0;
+    node.style.right = 0;
+    node.style.fontSize = '30px';
+    node.style.color = '#ffffff';
+
+    node.textContent = errorMessage;
+    document.body.insertAdjacentElement('afterbegin', node);
+  };
+
   var init = function () {
-    dataArray = window.data.getData(8);
-    for (var i = 0; i < dataArray.length; i++) {
-      buttonFragment.appendChild(window.pin.renderButton(dataArray[i], i));
-    }
-    for (i = 0; i < allFormElement.length; i++) {
+    for (var i = 0; i < allFormElement.length; i++) {
       allFormElement[i].disabled = true;
     }
     mapForm.classList.add('notice__form--disabled');
     mapMainPin.addEventListener('mousedown', dragAndDrop);
+    window.backend.load(successHandler, errorHandler);
   };
   init();
 
