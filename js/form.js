@@ -3,13 +3,14 @@
 (function () {
   var mapForm = document.querySelector('.notice__form');
   var inputTitle = document.querySelector('#title');
-  var inputAdress = document.querySelector('#address');
+  var inputAddress = document.querySelector('#address');
   var inputPrice = document.querySelector('#price');
   var inputType = document.querySelector('#type');
   var inputTimeIn = document.querySelector('#timein');
   var inputTimeOut = document.querySelector('#timeout');
   var inputRoomNumber = document.querySelector('#room_number');
   var inputCapacity = document.querySelector('#capacity');
+  var resButton = document.querySelector('.form__reset');
   var TYPES_PRICES = {bungalo: 0, flat: 1000, house: 5000, palace: 10000};
 
   var ROOMS_GUESTS = {
@@ -18,6 +19,7 @@
     3: ['1', '2', '3'],
     100: ['0']
   };
+
   var inputRoomNumberChange = function () {
     var currentValue = inputRoomNumber.value;
     var optionCapacity = inputCapacity.options;
@@ -37,7 +39,6 @@
       }
     }
   };
-
   var syncValues = function (element, value) {
     element.value = value;
   };
@@ -47,6 +48,13 @@
   var removeMessage = function () {
     var alertMessage = document.querySelector('.alert-message');
     alertMessage.remove();
+  };
+  var validationCheck = function (evt) {
+    if (evt.currentTarget.validity.valueMissing || evt.currentTarget.validity.tooLong || evt.currentTarget.validity.tooShort) {
+      evt.currentTarget.style = 'border: 1px solid red;';
+    } else {
+      evt.currentTarget.style = 'border: 1px solid #d9d9d3;';
+    }
   };
 
   var successHandler = function () {
@@ -62,8 +70,10 @@
     node.textContent = 'Ваше объявление успешно размещено';
     document.body.insertAdjacentElement('afterbegin', node);
     mapForm.reset();
+    inputRoomNumberChange();
     setTimeout(removeMessage, 3000);
   };
+
   var errorHandler = function (errorMessage) {
     var node = document.createElement('div');
     node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: red;';
@@ -80,8 +90,8 @@
   };
 
   var formInit = function () {
-    inputAdress.required = true;
-    inputAdress.readOnly = true;
+    inputAddress.required = true;
+    inputAddress.readOnly = true;
     inputTitle.required = true;
     inputTitle.minLength = 30;
     inputTitle.maxLength = 100;
@@ -92,14 +102,22 @@
     inputRoomNumber.addEventListener('change', inputRoomNumberChange);
     mapForm.action = 'https://js.dump.academy/keksobooking';
     inputRoomNumberChange();
+    resButton.addEventListener('click', function (evt) {
+      evt.preventDefault();
+      mapForm.reset();
+      evt.preventDefault();
+      inputRoomNumberChange();
+    });
 
     window.synchronizeFields(inputTimeIn, inputTimeOut, syncValues);
     window.synchronizeFields(inputType, inputPrice, syncValueWithMin);
-    mapForm.addEventListener('submit', function (evt) {
-      evt.preventDefault();
+    mapForm.addEventListener('submit', function (subEvt) {
+      subEvt.preventDefault();
       window.backend.save(new FormData(mapForm), successHandler, errorHandler);
     });
+    inputTitle.addEventListener('invalid', validationCheck);
+    inputAddress.addEventListener('invalid', validationCheck);
+    inputPrice.addEventListener('invalid', validationCheck);
   };
-
   formInit();
 })();

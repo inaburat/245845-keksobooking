@@ -5,7 +5,7 @@
   var mapPins = document.querySelector('.map__pins'); // область для открисовки новых кнопок
   var mapMainPin = document.querySelector('.map__pin--main');
   var mapForm = document.querySelector('.notice__form');
-  var allFormElement = document.querySelectorAll('fieldset');
+  var allFormElement = mapForm.querySelectorAll('fieldset');
   var dataArray = [];
 
   var MAIN_PIN_HEIGHT = 84;
@@ -96,9 +96,15 @@
     return dataArray[index];
   };
 
+  var getPinCoords = function () {
+    var event = new Event('click');
+    mapMainPin.dispatchEvent(event);
+  };
+
   var successHandler = function (data) {
     dataArray = data;
   };
+
   var errorHandler = function (errorMessage) {
     var node = document.createElement('div');
     node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: red;';
