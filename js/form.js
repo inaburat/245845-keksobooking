@@ -11,6 +11,7 @@
   var inputRoomNumber = document.querySelector('#room_number');
   var inputCapacity = document.querySelector('#capacity');
   var resButton = document.querySelector('.form__reset');
+  var mapMainPin = document.querySelector('.map__pin--main');
   var TYPES_PRICES = {bungalo: 0, flat: 1000, house: 5000, palace: 10000};
 
   var ROOMS_GUESTS = {
@@ -56,9 +57,14 @@
       evt.currentTarget.style = 'border: 1px solid #d9d9d3;';
     }
   };
-
+  var getPinCoords = function () {
+    var pinCoordX = mapMainPin.offsetLeft;
+    var pinCoordY = mapMainPin.offsetTop;
+    inputAddress.value = 'x: ' + pinCoordX + ', y: ' + (pinCoordY + window.map.MAIN_PIN_HEIGHT);
+  };
   var successHandler = function () {
     var node = document.createElement('div');
+
     node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: green;';
     node.style.position = 'fixed';
     node.style.left = 0;
@@ -71,6 +77,7 @@
     document.body.insertAdjacentElement('afterbegin', node);
     mapForm.reset();
     inputRoomNumberChange();
+    getPinCoords();
     setTimeout(removeMessage, 3000);
   };
 
@@ -120,4 +127,8 @@
     inputPrice.addEventListener('invalid', validationCheck);
   };
   formInit();
+
+  window.form = {
+    getPinCoords: getPinCoords
+  };
 })();

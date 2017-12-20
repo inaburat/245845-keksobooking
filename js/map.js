@@ -96,11 +96,6 @@
     return dataArray[index];
   };
 
-  var getPinCoords = function () {
-    var event = new Event('click');
-    mapMainPin.dispatchEvent(event);
-  };
-
   var successHandler = function (data) {
     dataArray = data;
   };
@@ -130,7 +125,8 @@
 
   window.map = {
     activateMap: activateMap,
-    getDataById: getDataById
+    getDataById: getDataById,
+    MAIN_PIN_HEIGHT: MAIN_PIN_HEIGHT
   };
 
 })();
