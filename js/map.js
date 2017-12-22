@@ -2,7 +2,6 @@
 
 (function () {
   var map = document.querySelector('.map');
-  var mapPins = document.querySelector('.map__pins'); // область для открисовки новых кнопок
   var mapMainPin = document.querySelector('.map__pin--main');
   var mapForm = document.querySelector('.notice__form');
   var allFormElement = mapForm.querySelectorAll('fieldset');
@@ -13,15 +12,11 @@
   var MAX_CLIENT_Y = 500;
 
   var activateMap = function () {
-    var buttonFragment = document.createDocumentFragment(); // область для клонирования элементов
-    for (var i = 0; i < dataArray.length; i++) {
-      buttonFragment.appendChild(window.pin.renderButton(dataArray[i], i));
-    }
-    mapPins.appendChild(buttonFragment); // переносим элементы из области клонирования на страницу
     map.classList.remove('map--faded');
+    window.pin.injectButtons(dataArray);
     mapForm.classList.remove('notice__form--disabled');
     mapForm.classList.remove('notice__form--disabled');
-    for (i = 0; i < allFormElement.length; i++) {
+    for (var i = 0; i < allFormElement.length; i++) {
       allFormElement[i].disabled = false;
     }
     document.removeEventListener('mouseup', activateMap);
