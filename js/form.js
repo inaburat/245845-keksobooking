@@ -113,6 +113,7 @@
       evt.preventDefault();
       mapForm.reset();
       evt.preventDefault();
+      getPinCoords();
       inputRoomNumberChange();
     });
 

@@ -17,9 +17,9 @@
     for (var i = 0; i < dataArray.length; i++) {
       buttonFragment.appendChild(window.pin.renderButton(dataArray[i], i));
     }
-    mapForm.classList.remove('notice__form--disabled');
-    map.classList.remove('map--faded');
     mapPins.appendChild(buttonFragment); // переносим элементы из области клонирования на страницу
+    map.classList.remove('map--faded');
+    mapForm.classList.remove('notice__form--disabled');
     mapForm.classList.remove('notice__form--disabled');
     for (i = 0; i < allFormElement.length; i++) {
       allFormElement[i].disabled = false;
@@ -99,7 +99,9 @@
   var successHandler = function (data) {
     dataArray = data;
   };
-
+  var getDataArray = function (data) {
+    return dataArray;
+  };
   var errorHandler = function (errorMessage) {
     var node = document.createElement('div');
     node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: red;';
@@ -126,6 +128,7 @@
   window.map = {
     activateMap: activateMap,
     getDataById: getDataById,
+    getDataArray: getDataArray,
     MAIN_PIN_HEIGHT: MAIN_PIN_HEIGHT
   };
 
