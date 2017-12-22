@@ -20,10 +20,20 @@
     }
     return feuteresHtml;
   };
-  // подставляем значения из массива в 'статью'
+  var renderPhotos = function (data) {
+    var rnd = Math.random() * data.offer.photos.length;
+
+    return data.offer.photos[Math.floor(rnd)];
+  };
+
   var renderArticle = function (data) {
     var articleElement = templateArticle.cloneNode(true);
     var popUpClose = articleElement.querySelector('.popup__close');
+    var popUpPhoto = articleElement.querySelector('.popup__pictures');
+    var popUpPhotoChild = popUpPhoto.querySelector('img');
+    popUpPhotoChild.width = 210;
+    popUpPhotoChild.height = 140;
+
 
     articleElement.querySelector('h3').textContent = data.offer.title;
     articleElement.querySelector('p small').textContent = data.offer.address;
@@ -34,6 +44,7 @@
     articleElement.querySelector('.popup__features').innerHTML = window.card.renderFeuteres(data);
     articleElement.querySelector('.popup__features').nextElementSibling.textContent = data.offer.description;
     articleElement.querySelector('img').src = data.author.avatar;
+    popUpPhotoChild.src = window.card.renderPhotos(data);
     popUpClose.addEventListener('click', closePopup);
     popUpClose.addEventListener('keydown', onPopupEnterPress);
     return articleElement;
@@ -66,6 +77,7 @@
     renderFeuteres: renderFeuteres,
     renderArticle: renderArticle,
     openPopup: openPopup,
-    closePopup: closePopup
+    closePopup: closePopup,
+    renderPhotos: renderPhotos
   };
 })();
