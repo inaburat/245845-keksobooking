@@ -21,10 +21,9 @@
     return feuteresHtml;
   };
   var renderPhotos = function (data) {
-    var rnd = Math.random(data.length);
-    var rand = Math.round(rnd);
+    var rnd = Math.random() * data.offer.photos.length;
 
-    return data.offer.photos[rand];
+    return data.offer.photos[Math.floor(rnd)];
   };
 
   var renderArticle = function (data) {

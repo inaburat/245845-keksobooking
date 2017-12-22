@@ -94,7 +94,7 @@
   var successHandler = function (data) {
     dataArray = data;
   };
-  var getDataArray = function (data) {
+  var getDataArray = function () {
     return dataArray;
   };
   var errorHandler = function (errorMessage) {

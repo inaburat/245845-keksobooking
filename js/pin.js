@@ -13,7 +13,6 @@
   var filterFeatures = document.querySelector('#housing-features');
   var filterFeaturesAll = filterFeatures.querySelectorAll('input');
   var BUTTON_HEIGHT = 64;
-  var dataArray = [];
   var filterKeys = [];
 
 
@@ -59,74 +58,32 @@
 
   var renderFilter = function () {
     filterKeys = getFilterKeys();
-    dataArray = window.map.getDataArray();
-    var dataTypes = [];
-    var dataPrice = [];
-    var dataRooms = [];
-    var dataGuests = [];
-    var dataFeatures = [];
+    var dataFeatures = window.map.getDataArray()
+        .filter(function (item) {
+          return filterKeys[0].type === 'any' || item.offer.type === filterKeys[0].type;
+        })
+        .filter(function (item) {
+          return (filterKeys[0].price === 'low' && item.offer.price <= 10000)
+          || (filterKeys[0].price === 'middle' && item.offer.price >= 10000 && item.offer.price <= 50000)
+          || (filterKeys[0].price === 'high' && item.offer.price >= 50000)
+          || (filterKeys[0].price === 'any');
+        })
+        .filter(function (item) {
+          return (item.offer.rooms).toString() === filterKeys[0].rooms || filterKeys[0].rooms === 'any';
+        })
+        .filter(function (item) {
+          return (item.offer.guests).toString() === filterKeys[0].guests || filterKeys[0].guests === 'any';
+        })
+        .filter(function (item) {
+          return filterKeys[0].features.length === 0
+          || filterKeys[0].features.every(function (feature) {
+            return item.offer.features.includes(feature);
+          });
+        });
 
-    var getData = function () {
-      for (var i = 0; i < dataArray.length; i++) {
-        if (dataArray[i].offer.type === filterKeys[0].type || filterKeys[0].type === 'any') {
-          dataTypes.push(dataArray[i]);
-        }
-      }
-    };
-    getData();
-    var getPrice = function () {
-      for (var i = 0; i < dataTypes.length; i++) {
-        if (filterKeys[0].price === 'low' && dataTypes[i].offer.price <= 10000) {
-          dataPrice.push(dataTypes[i]);
-        } else if (filterKeys[0].price === 'middle' && dataTypes[i].offer.price >= 10000 && dataTypes[i].offer.price <= 50000) {
-          dataPrice.push(dataTypes[i]);
-        } else if (filterKeys[0].price === 'high' && dataTypes[i].offer.price >= 50000) {
-          dataPrice.push(dataTypes[i]);
-        } else if (filterKeys[0].price === 'any') {
-          dataPrice.push(dataTypes[i]);
-        }
-      }
-    };
-    getPrice();
-    var getRooms = function () {
-      for (var i = 0; i < dataPrice.length; i++) {
-        if ((dataPrice[i].offer.rooms).toString() === filterKeys[0].rooms || filterKeys[0].rooms === 'any') {
-          dataRooms.push(dataTypes[i]);
-        }
-      }
-    };
-    getRooms();
-    var getGuests = function () {
-      for (var i = 0; i < dataRooms.length; i++) {
-        if ((dataRooms[i].offer.guests).toString() === filterKeys[0].guests || filterKeys[0].guests === 'any') {
-          dataGuests.push(dataRooms[i]);
-        }
-      }
-    };
-    getGuests();
-    var getDataFeatures = function () {
-      var count = 0;
-
-      for (var i = 0; i < dataGuests.length; i++) {
-        count = 0;
-        for (var j = 0; j < filterKeys[0].features.length; j++) {
-          for (var k = 0; k < dataGuests[i].offer.features.length; k++) {
-            if (dataGuests[i].offer.features[k] === filterKeys[0].features[j]) {
-              count++;
-              if (count === filterKeys[0].features.length) {
-                dataFeatures.push(dataGuests[i]);
-                count = 0;
-              }
-            }
-          }
-        }
-      }
-    };
-    getDataFeatures();
     removeButtons();
     injectButtons(dataFeatures);
   };
-
 
   var onPinEnterPress = function (evt) {
     window.util.isEnterEvent(evt, window.card.openPopup);
