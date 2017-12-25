@@ -10,9 +10,10 @@
   var inputTimeOut = document.querySelector('#timeout');
   var inputRoomNumber = document.querySelector('#room_number');
   var inputCapacity = document.querySelector('#capacity');
-  var resButton = document.querySelector('.form__reset');
+  var clearButton = document.querySelector('.form__reset');
   var mapMainPin = document.querySelector('.map__pin--main');
   var TYPES_PRICES = {bungalo: 0, flat: 1000, house: 5000, palace: 10000};
+  var DELAY = 3000;
 
   var ROOMS_GUESTS = {
     1: ['1'],
@@ -40,6 +41,9 @@
       }
     }
   };
+  var inputTypeChange = function () {
+    inputPrice.min = TYPES_PRICES[inputType.value];
+  };
   var syncValues = function (element, value) {
     element.value = value;
   };
@@ -62,7 +66,7 @@
     var pinCoordY = mapMainPin.offsetTop;
     inputAddress.value = 'x: ' + pinCoordX + ', y: ' + (pinCoordY + window.map.MAIN_PIN_HEIGHT);
   };
-  var successHandler = function () {
+  var onUploadSuccess = function () {
     var node = document.createElement('div');
 
     node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: green;';
@@ -78,10 +82,11 @@
     mapForm.reset();
     inputRoomNumberChange();
     getPinCoords();
-    setTimeout(removeMessage, 3000);
+    inputTypeChange();
+    setTimeout(removeMessage, DELAY);
   };
 
-  var errorHandler = function (errorMessage) {
+  var onUploadError = function (errorMessage) {
     var node = document.createElement('div');
     node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: red;';
     node.style.position = 'fixed';
@@ -106,14 +111,16 @@
     inputPrice.min = 0;
     inputPrice.max = 1000000;
     inputPrice.placeholder = 1000;
+    inputTypeChange();
     inputRoomNumber.addEventListener('change', inputRoomNumberChange);
     mapForm.action = 'https://js.dump.academy/keksobooking';
     inputRoomNumberChange();
-    resButton.addEventListener('click', function (evt) {
+    clearButton.addEventListener('click', function (evt) {
       evt.preventDefault();
       mapForm.reset();
       evt.preventDefault();
       getPinCoords();
+      inputTypeChange();
       inputRoomNumberChange();
     });
 
@@ -121,7 +128,7 @@
     window.synchronizeFields(inputType, inputPrice, syncValueWithMin);
     mapForm.addEventListener('submit', function (subEvt) {
       subEvt.preventDefault();
-      window.backend.save(new FormData(mapForm), successHandler, errorHandler);
+      window.backend.save(new FormData(mapForm), onUploadSuccess, onUploadError);
     });
     inputTitle.addEventListener('invalid', validationCheck);
     inputAddress.addEventListener('invalid', validationCheck);
@@ -130,6 +137,7 @@
   formInit();
 
   window.form = {
+    syncValueWithMin: syncValueWithMin,
     getPinCoords: getPinCoords
   };
 })();

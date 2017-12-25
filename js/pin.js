@@ -4,16 +4,17 @@
   var template = document.querySelector('template').content;
   var templateButton = template.querySelector('.map__pin');
   var buttonFragment = document.createDocumentFragment();
-  var mapFilterSelect = document.querySelectorAll('select');
+  var mapFilterSelects = document.querySelectorAll('select');
   var mapPins = document.querySelector('.map__pins');
   var filterGuests = document.querySelector('#housing-guests');
   var filterType = document.querySelector('#housing-type');
   var filterPrice = document.querySelector('#housing-price');
   var filterRoom = document.querySelector('#housing-rooms');
-  var filterFeatures = document.querySelector('#housing-features');
-  var filterFeaturesAll = filterFeatures.querySelectorAll('input');
-  var BUTTON_HEIGHT = 64;
+  var filterFeature = document.querySelector('#housing-features');
+  var filterFeaturesAll = filterFeature.querySelectorAll('input');
   var filterKeys = [];
+  var dataFeatures = [];
+  var BUTTON_HEIGHT = 23 + 18;
 
 
   var injectButtons = function (data) {
@@ -58,7 +59,7 @@
 
   var renderFilter = function () {
     filterKeys = getFilterKeys();
-    var dataFeatures = window.map.getDataArray()
+    dataFeatures = window.map.getDataArray()
         .filter(function (item) {
           return filterKeys[0].type === 'any' || item.offer.type === filterKeys[0].type;
         })
@@ -84,6 +85,9 @@
     removeButtons();
     injectButtons(dataFeatures);
   };
+  var getDataFeatures = function () {
+    return dataFeatures;
+  };
 
   var onPinEnterPress = function (evt) {
     window.util.isEnterEvent(evt, window.card.openPopup);
@@ -104,18 +108,25 @@
   };
 
   var init = function () {
-    var checkbox = filterFeatures.querySelectorAll('input');
-    for (var i = 0; i < mapFilterSelect.length; i++) {
-      mapFilterSelect[i].addEventListener('change', renderFilter);
+    var checkbox = filterFeature.querySelectorAll('input');
+    for (var i = 0; i < mapFilterSelects.length; i++) {
+      mapFilterSelects[i].addEventListener('change', function () {
+        window.card.closePopup();
+        renderFilter();
+      });
     }
     for (i = 0; i < checkbox.length; i++) {
-      checkbox[i].addEventListener('change', renderFilter);
+      checkbox[i].addEventListener('change', function () {
+        window.card.closePopup();
+        renderFilter();
+      });
     }
   };
   init();
   window.pin = {
     renderButton: renderButton,
     getFilterKeys: getFilterKeys,
+    getDataFeatures: getDataFeatures,
     renderFilter: renderFilter,
     injectButtons: injectButtons,
     removeButtons: removeButtons
