@@ -1,6 +1,9 @@
 'use strict';
 
 (function () {
+  var BUTTON_HEIGHT = 23 + 18;
+  var MIN_PRICE = 10000;
+  var MAX_PRICE = 50000;
   var template = document.querySelector('template').content;
   var templateButton = template.querySelector('.map__pin');
   var buttonFragment = document.createDocumentFragment();
@@ -14,8 +17,6 @@
   var filterFeaturesAll = filterFeature.querySelectorAll('input');
   var filterKeys = [];
   var dataFeatures = [];
-  var BUTTON_HEIGHT = 23 + 18;
-
 
   var injectButtons = function (data) {
     for (var i = 0; i < data.length; i++) {
@@ -64,9 +65,9 @@
           return filterKeys[0].type === 'any' || item.offer.type === filterKeys[0].type;
         })
         .filter(function (item) {
-          return (filterKeys[0].price === 'low' && item.offer.price <= 10000)
-          || (filterKeys[0].price === 'middle' && item.offer.price >= 10000 && item.offer.price <= 50000)
-          || (filterKeys[0].price === 'high' && item.offer.price >= 50000)
+          return (filterKeys[0].price === 'low' && item.offer.price <= MIN_PRICE)
+          || (filterKeys[0].price === 'middle' && item.offer.price >= MIN_PRICE && item.offer.price <= MAX_PRICE)
+          || (filterKeys[0].price === 'high' && item.offer.price >= MAX_PRICE)
           || (filterKeys[0].price === 'any');
         })
         .filter(function (item) {
@@ -83,7 +84,7 @@
         });
 
     removeButtons();
-    injectButtons(dataFeatures);
+    injectButtons(window.map.getFiveObjects(dataFeatures));
   };
   var getDataFeatures = function () {
     return dataFeatures;

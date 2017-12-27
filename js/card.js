@@ -1,13 +1,15 @@
 'use strict';
 
 (function () {
+  var CARD_PHOTO_WIDTH = 210;
+  var CARD_PHOTO_HEIGHT = 140;
+  var HOUSE_TYPES = {flat: 'Квартира', bungalo: 'Бунгало', house: 'Дом'};
   var template = document.querySelector('template').content; // объект с шаблонами
   var templateArticle = template.querySelector('article.map__card'); // article для клонирования
 
   var map = document.querySelector('.map');
   var articleFragment = document.createDocumentFragment();
   var articleFlag = document.querySelector('.map__filters-container');
-  var HOUSE_TYPES = {flat: 'Квартира', bungalo: 'Бунгало', house: 'Дом'};
 
   var renderFeuteres = function (data) {
     var feuteresList = data.offer.features;
@@ -31,8 +33,8 @@
     var popUpClose = articleElement.querySelector('.popup__close');
     var popUpPhoto = articleElement.querySelector('.popup__pictures');
     var popUpPhotoChild = popUpPhoto.querySelector('img');
-    popUpPhotoChild.width = 210;
-    popUpPhotoChild.height = 140;
+    popUpPhotoChild.width = CARD_PHOTO_WIDTH;
+    popUpPhotoChild.height = CARD_PHOTO_HEIGHT;
 
 
     articleElement.querySelector('h3').textContent = data.offer.title;
@@ -45,7 +47,11 @@
     articleElement.querySelector('.popup__features').innerHTML = window.card.renderFeuteres(data);
     articleElement.querySelector('.popup__features').nextElementSibling.textContent = data.offer.description;
     articleElement.querySelector('img').src = data.author.avatar;
-    popUpPhotoChild.src = window.card.renderPhotos(data);
+    if (data.offer.photos.length) {
+      popUpPhotoChild.src = window.card.renderPhotos(data);
+    } else {
+      popUpPhotoChild.remove();
+    }
     popUpClose.addEventListener('click', closePopup);
     popUpClose.addEventListener('keydown', onPopupEnterPress);
     return articleElement;

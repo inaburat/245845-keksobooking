@@ -1,6 +1,14 @@
 'use strict';
 
 (function () {
+  var TYPES_PRICES = {bungalo: 0, flat: 1000, house: 5000, palace: 10000};
+  var DELAY = 3000;
+  var ROOMS_GUESTS = {
+    1: ['1'],
+    2: ['1', '2'],
+    3: ['1', '2', '3'],
+    100: ['0']
+  };
   var mapForm = document.querySelector('.notice__form');
   var inputTitle = document.querySelector('#title');
   var inputAddress = document.querySelector('#address');
@@ -12,15 +20,6 @@
   var inputCapacity = document.querySelector('#capacity');
   var clearButton = document.querySelector('.form__reset');
   var mapMainPin = document.querySelector('.map__pin--main');
-  var TYPES_PRICES = {bungalo: 0, flat: 1000, house: 5000, palace: 10000};
-  var DELAY = 3000;
-
-  var ROOMS_GUESTS = {
-    1: ['1'],
-    2: ['1', '2'],
-    3: ['1', '2', '3'],
-    100: ['0']
-  };
 
   var inputRoomNumberChange = function () {
     var currentValue = inputRoomNumber.value;
@@ -98,7 +97,7 @@
 
     node.textContent = errorMessage;
     document.body.insertAdjacentElement('afterbegin', node);
-    setTimeout(removeMessage, 3000);
+    setTimeout(removeMessage, DELAY);
   };
 
   var formInit = function () {

@@ -1,6 +1,11 @@
 'use strict';
 
 (function () {
+  var MAIN_PIN_HEIGHT = 84;
+  var MIN_CLIENT_Y = 100;
+  var MAX_CLIENT_Y = 500;
+  var MIN_DATA_ITEM = 0;
+  var MAX_DATA_ITEM = 5;
   var map = document.querySelector('.map');
   var mapMainPin = document.querySelector('.map__pin--main');
   var mapForm = document.querySelector('.notice__form');
@@ -8,15 +13,43 @@
   var dataArray = [];
   var dataFeatures = [];
 
-  var MAIN_PIN_HEIGHT = 84;
-  var MIN_CLIENT_Y = 100;
-  var MAX_CLIENT_Y = 500;
-  var MIN_DATA_ITEM = 5;
-  var MAX_DATA_ITEM = 10;
+  var getFiveObjects = function (array) {
+    return array.slice(MIN_DATA_ITEM, MAX_DATA_ITEM);
+  };
+
+  var getDataById = function (index) {
+    dataFeatures = window.pin.getDataFeatures();
+    if (dataFeatures.length > 0) {
+      return dataFeatures[index];
+    } else {
+      return dataArray[index];
+    }
+  };
+
+  var getDataArray = function () {
+    return dataArray;
+  };
+
+  var onLoadSuccess = function (data) {
+    dataArray = data;
+  };
+
+  var onLoadError = function (errorMessage) {
+    var node = document.createElement('div');
+    node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: red;';
+    node.style.position = 'absolute';
+    node.style.left = 0;
+    node.style.right = 0;
+    node.style.fontSize = '30px';
+    node.style.color = '#ffffff';
+
+    node.textContent = errorMessage;
+    document.body.insertAdjacentElement('afterbegin', node);
+  };
 
   var activate = function () {
     map.classList.remove('map--faded');
-    window.pin.injectButtons(dataArray);
+    window.pin.injectButtons(getFiveObjects(dataArray));
     mapForm.classList.remove('notice__form--disabled');
     mapForm.classList.remove('notice__form--disabled');
     for (var i = 0; i < allFormElements.length; i++) {
@@ -90,34 +123,6 @@
 
   };
 
-  var getDataById = function (index) {
-    dataFeatures = window.pin.getDataFeatures();
-    if (dataFeatures.length > 0) {
-      return dataFeatures[index];
-    } else {
-      return dataArray[index];
-    }
-  };
-
-  var onLoadSuccess = function (data) {
-    dataArray = data.slice(MIN_DATA_ITEM, MAX_DATA_ITEM);
-  };
-  var getDataArray = function () {
-    return dataArray;
-  };
-  var onLoadError = function (errorMessage) {
-    var node = document.createElement('div');
-    node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: red;';
-    node.style.position = 'absolute';
-    node.style.left = 0;
-    node.style.right = 0;
-    node.style.fontSize = '30px';
-    node.style.color = '#ffffff';
-
-    node.textContent = errorMessage;
-    document.body.insertAdjacentElement('afterbegin', node);
-  };
-
   var init = function () {
     for (var i = 0; i < allFormElements.length; i++) {
       allFormElements[i].disabled = true;
@@ -133,6 +138,7 @@
     activate: activate,
     getDataById: getDataById,
     getDataArray: getDataArray,
+    getFiveObjects: getFiveObjects,
     MAIN_PIN_HEIGHT: MAIN_PIN_HEIGHT
   };
 
